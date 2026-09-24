@@ -20,7 +20,8 @@ backend/            REST API (Express + PostgreSQL), Dockerfile
   src/init-db.js    Creates tables and demo data (safe to run repeatedly)
   src/routes/       auth, users, lots, newsletter, contact
 frontend/           Web app (React + Vite), Dockerfile and nginx.conf
-docker-compose.yml  Local PostgreSQL + API + web app
+.devcontainer/      Codespaces / VS Code container with Docker enabled
+docker-compose.yml  PostgreSQL + API + web app
 render.yaml         Free hosting blueprint
 ~~~
 
@@ -36,6 +37,27 @@ to the api container. The api container creates the tables and demo data on star
 Demo accounts:
 - emitter@stockshare.demo / password123 (emitter)
 - receiver@stockshare.demo / password123 (receiver)
+
+## Run it in GitHub Codespaces
+
+Codespaces can run the whole stack, because the repository ships a dev container configuration
+that enables Docker inside the codespace.
+
+1. On the repository page choose Code, then Codespaces, then Create codespace on main.
+2. Wait for the container to build. Docker and Docker Compose are ready when the terminal appears.
+3. In the terminal run: docker compose up --build
+4. Open the Ports panel and click the forwarded address for port 8080, or use the "Open in Browser"
+   button. Codespaces gives you an address like
+   https://your-codespace-name-8080.app.github.dev - that address replaces localhost:8080.
+5. To let other people open the site, right click the 8080 port in the Ports panel, choose Port
+   Visibility, then Public.
+
+Notes:
+- The web container proxies /api to the api container inside the same network, so the site works
+  fully through the forwarded address without any CORS setup.
+- A personal GitHub account includes 120 core hours and 15 GB-month of Codespaces storage per month.
+  The codespace stops when idle and is deleted after a period of inactivity, but the PostgreSQL data
+  lives in a Docker volume and survives restarts for as long as the codespace exists.
 
 ## Run without Docker
 
