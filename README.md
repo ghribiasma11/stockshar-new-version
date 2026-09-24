@@ -10,7 +10,7 @@ ingredients, and receivers reserve them for human donation, animal feed, or indu
 - Database: PostgreSQL
 - File uploads: local disk storage served under /uploads
 - Containers: Docker (backend and frontend), Docker Compose for the full stack
-- Hosting blueprint: Render (render.yaml)
+- Hosting blueprint: Render free tier (render.yaml) with a free external PostgreSQL
 
 ## Repository layout
 
@@ -21,10 +21,10 @@ backend/            REST API (Express + PostgreSQL), Dockerfile
   src/routes/       auth, users, lots, newsletter, contact
 frontend/           Web app (React + Vite), Dockerfile and nginx.conf
 docker-compose.yml  Local PostgreSQL + API + web app
-render.yaml         Managed PostgreSQL + two web services
+render.yaml         Free hosting blueprint
 ~~~
 
-## Run everything with one command
+## Run everything locally, free, with one command
 
 ~~~
 docker compose up --build
@@ -43,25 +43,47 @@ Demo accounts:
 2. Back end: cd backend, cp .env.example .env, npm install, npm run db:init, npm run dev.
 3. Front end: cd frontend, cp .env.example .env, npm install, npm run dev (http://localhost:5173).
 
-## Deploy to a public URL with Render
+## Deploy a public URL for free
 
-Render reads render.yaml from the repository and creates the database and both services.
+The whole stack can run on free plans: a free Render web service for the API, a free Render static
+site for the web app, and a free external PostgreSQL. Nothing here needs a paid instance.
 
-1. Push this repository to GitHub (already done) and sign in to https://render.com.
-2. Choose New, then Blueprint, and pick the repository ghribiasma11/stockshar-new-version.
-3. Render shows the three resources from render.yaml. Confirm and apply.
-   - stockshare-db: managed PostgreSQL
-   - stockshare-api: the REST API container
-   - stockshare-web: the web app container
-4. Wait for both services to report Live. The API runs the schema and demo data on first boot.
-5. Open the URL Render shows for stockshare-web, for example https://stockshare-web.onrender.com.
-6. Replace the two placeholder hostnames in render.yaml with the real URLs Render assigned
-   (the VITE_API_BASE of the web service and the CORS_ORIGIN of the api service), commit, and push.
-   Render redeploys automatically.
+What is free and what to expect:
+- Render free web service: sleeps after 15 minutes without traffic. The first visit afterwards takes
+  roughly 50 seconds to wake up.
+- Render static site: always on, no sleeping.
+- Free PostgreSQL: Neon (0.5 GB) or Supabase (500 MB). Render's own free database expires 30 days
+  after creation, so use an external one if you want it to last.
+- Profile photos are stored on the API container's local disk. On a free host that disk is wiped on
+  every restart or redeploy, so photos do not survive.
 
-Any other Docker host works the same way: build backend/Dockerfile and frontend/Dockerfile,
-point DATABASE_URL at a PostgreSQL instance, set CORS_ORIGIN to the web URL, and set the
-VITE_API_BASE build argument to the public API URL followed by /api.
+Steps:
+
+1. Create a free PostgreSQL and copy its connection string.
+   - Neon: https://neon.tech, create a project, copy the connection string, append sslmode=require.
+   - Or Supabase: https://supabase.com, create a project, copy the connection string.
+
+2. Deploy. Sign in to https://render.com with GitHub, choose New, then Blueprint, and select the
+   repository ghribiasma11/stockshar-new-version. Render reads render.yaml and offers two resources:
+   stockshare-api and stockshare-web.
+
+3. When Render asks for the DATABASE_URL value, paste the connection string from step 1. Confirm.
+
+4. Wait for both resources to report Live. The API creates the tables and demo data on first boot.
+
+5. Open the URL Render shows for stockshare-web. That is your public site.
+
+6. Make the two services talk to each other: in render.yaml set VITE_API_BASE to the API URL plus
+   /api, and set CORS_ORIGIN on the API to the static site URL. Commit and push; Render redeploys.
+
+If the blueprint is rejected, create the two resources by hand instead:
+- Web Service, Docker, root directory backend, free instance type.
+- Static Site, build command cd frontend && npm install && npm run build, publish directory
+  frontend/dist, with a rewrite rule from /* to /index.html.
+
+Any other Docker host works too: build backend/Dockerfile and frontend/Dockerfile, point
+DATABASE_URL at PostgreSQL, set CORS_ORIGIN to the web URL, and set the VITE_API_BASE build
+argument to the public API URL followed by /api.
 
 ## REST API
 
