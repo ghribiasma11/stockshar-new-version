@@ -1,0 +1,38 @@
+# Render blueprint: creates a managed PostgreSQL database, the REST API and the web app.
+# After the first deploy, replace the placeholder hostnames below with the real URLs
+# Render assigns to your services, then redeploy.
+services:
+  - type: web
+    name: stockshare-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stockshare-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://stockshare-web.onrender.com
+
+  - type: web
+    name: stockshare-web
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: starter
+    envVars:
+      - key: VITE_API_BASE
+        value: https://stockshare-api.onrender.com/api
+      - key: VITE_PUBLIC_SITE_URL
+        value: https://stockshare-web.onrender.com
+
+databases:
+  - name: stockshare-db
+    plan: free
+    databaseName: stockshare
+    user: stockshare

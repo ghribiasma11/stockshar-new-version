@@ -10,6 +10,40 @@ services:
       - "5432:5432"
     volumes:
       - stockshare_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stockshare -d stockshare"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    container_name: stockshare-api
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgres://stockshare:stockshare@db:5432/stockshare
+      JWT_SECRET: change-me-in-production
+      CORS_ORIGIN: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    volumes:
+      - stockshare_uploads:/app/uploads
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: /api
+        VITE_PUBLIC_SITE_URL: http://localhost:8080
+    container_name: stockshare-web
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
 
 volumes:
   stockshare_data:
+  stockshare_uploads:

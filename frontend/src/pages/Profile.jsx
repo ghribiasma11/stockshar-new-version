@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { api } from '../api.js';
+import { api, assetUrl } from '../api.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 
 export default function Profile() {
@@ -65,7 +65,7 @@ export default function Profile() {
       <div className="panel">
         <div className="avatar-block">
           {user.avatar_url ? (
-            <img className="avatar" src={user.avatar_url} alt="Profile" />
+            <img className="avatar" src={assetUrl(user.avatar_url)} alt="Profile" />
           ) : (
             <div className="avatar avatar-placeholder">{(user.full_name || 'U').charAt(0)}</div>
           )}
