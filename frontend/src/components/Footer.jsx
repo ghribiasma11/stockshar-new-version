@@ -29,9 +29,7 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <span>Copyright StockShare. All rights reserved.</span>
-        <span className="canonical">
-          Canonical link: <a href={siteUrl}>{siteUrl}</a>
-        </span>
+        <span className="canonical">Canonical link: <a href={siteUrl}>{siteUrl}</a></span>
       </div>
     </footer>
   );

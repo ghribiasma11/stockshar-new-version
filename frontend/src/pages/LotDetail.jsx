@@ -29,43 +29,45 @@ export default function LotDetail() {
   }
 
   if (error) {
-    return <div className="page"><p className="form-error">{error}</p></div>;
+    return <p className="form-error">{error}</p>;
   }
   if (!lot) {
-    return <div className="page"><p>Loading lot...</p></div>;
+    return <p>Loading lot...</p>;
   }
 
   const isOwner = Boolean(user) && user.id === lot.owner_id;
   const canReserve = Boolean(user) && !isOwner && lot.status === 'available';
 
   return (
-    <div className="page lot-detail">
-      <Link to="/marketplace" className="back-link">Back to marketplace</Link>
-      <h1>{lot.title}</h1>
-      <p className="lot-meta">
-        {lot.quantity_kg} kg · {lot.expiry_status === 'near_expiry' ? 'Near expiry' : 'Fresh'} · {lot.location_city}, {lot.location_country}
-      </p>
-      <p className="lot-description">{lot.description}</p>
+    <div>
+      <Link to="/marketplace" className="back-link">← Back to marketplace</Link>
+      <div className="panel">
+        <h1>{lot.title}</h1>
+        <p className="lot-meta">
+          {lot.quantity_kg} kg · {lot.expiry_status === 'near_expiry' ? 'Near expiry' : 'Fresh'} · {lot.location_city}, {lot.location_country}
+        </p>
+        <p>{lot.description}</p>
 
-      <dl className="lot-facts">
-        <div><dt>Publisher</dt><dd>{lot.owner_organization || lot.owner_name}</dd></div>
-        <div><dt>Category</dt><dd>{lot.category}</dd></div>
-        <div><dt>Status</dt><dd>{lot.status}</dd></div>
-      </dl>
+        <dl className="lot-facts">
+          <div><dt>Publisher</dt><dd>{lot.owner_organization || lot.owner_name}</dd></div>
+          <div><dt>Category</dt><dd>{lot.category}</dd></div>
+          <div><dt>Status</dt><dd>{lot.status}</dd></div>
+        </dl>
 
-      {isOwner && (
-        <p className="owner-note">You published this lot. Emitters cannot reserve their own lots.</p>
-      )}
+        {isOwner && (
+          <p className="owner-note">You published this lot. Emitters cannot reserve their own lots.</p>
+        )}
 
-      {canReserve && (
-        <button type="button" className="btn btn-primary" onClick={reserve}>Reserve this lot</button>
-      )}
+        {canReserve && (
+          <button type="button" className="btn btn-primary" onClick={reserve}>Reserve this lot</button>
+        )}
 
-      {!user && (
-        <p className="owner-note"><Link to="/auth">Sign in</Link> as a receiver to reserve this lot.</p>
-      )}
+        {!user && (
+          <p className="owner-note"><Link to="/auth">Sign in</Link> as a receiver to reserve this lot.</p>
+        )}
 
-      {status && <p className="form-status">{status}</p>}
+        {status && <p className="form-status">{status}</p>}
+      </div>
     </div>
   );
 }

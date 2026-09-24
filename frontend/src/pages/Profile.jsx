@@ -20,7 +20,7 @@ export default function Profile() {
   }, [user]);
 
   if (!user) {
-    return <div className="page"><p>Please sign in to view your profile.</p></div>;
+    return <p>Please sign in to view your profile.</p>;
   }
 
   async function save(event) {
@@ -53,40 +53,48 @@ export default function Profile() {
   }
 
   return (
-    <div className="page profile-page">
-      <h1>Your profile</h1>
-
-      <div className="avatar-block">
-        {user.avatar_url ? (
-          <img className="avatar" src={user.avatar_url} alt="Profile" />
-        ) : (
-          <div className="avatar avatar-placeholder">{(user.full_name || 'U').charAt(0)}</div>
-        )}
+    <div>
+      <div className="util-row"><span>Your profile</span></div>
+      <div className="page-head">
         <div>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden-input" onChange={uploadPhoto} />
-          <button type="button" className="btn btn-secondary" onClick={() => fileRef.current.click()}>
-            Change profile photo
-          </button>
+          <h1>Your profile</h1>
+          <p>Update your details and profile photo.</p>
         </div>
       </div>
 
-      <form className="profile-form" onSubmit={save}>
-        <label>Full name
-          <input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
-        </label>
-        <label>Organization
-          <input value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} />
-        </label>
-        <label>Phone
-          <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-        </label>
-        <label>City
-          <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
-        </label>
-        <button type="submit" className="btn btn-primary">Save changes</button>
-      </form>
+      <div className="panel">
+        <div className="avatar-block">
+          {user.avatar_url ? (
+            <img className="avatar" src={user.avatar_url} alt="Profile" />
+          ) : (
+            <div className="avatar avatar-placeholder">{(user.full_name || 'U').charAt(0)}</div>
+          )}
+          <div>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden-input" onChange={uploadPhoto} />
+            <button type="button" className="btn btn-secondary" onClick={() => fileRef.current.click()}>
+              Change profile photo
+            </button>
+          </div>
+        </div>
 
-      {status && <p className="form-status">{status}</p>}
+        <form className="profile-form" onSubmit={save}>
+          <label>Full name
+            <input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
+          </label>
+          <label>Organization
+            <input value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} />
+          </label>
+          <label>Phone
+            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          </label>
+          <label>City
+            <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+          </label>
+          <button type="submit" className="btn btn-primary">Save changes</button>
+        </form>
+
+        {status && <p className="form-status">{status}</p>}
+      </div>
     </div>
   );
 }

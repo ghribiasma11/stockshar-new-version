@@ -9,7 +9,7 @@ export default function Account() {
   const navigate = useNavigate();
 
   if (!user) {
-    return <div className="page"><p>Please sign in to manage your account.</p></div>;
+    return <p>Please sign in to manage your account.</p>;
   }
 
   async function handleLogout() {
@@ -46,30 +46,37 @@ export default function Account() {
   }
 
   return (
-    <div className="page account-page">
-      <h1>Account settings</h1>
-      <p>Signed in as {user.email}.</p>
+    <div>
+      <div className="util-row"><span>Account settings</span></div>
+      <div className="page-head">
+        <div>
+          <h1>Account settings</h1>
+          <p>Signed in as {user.email}.</p>
+        </div>
+      </div>
 
-      <section className="account-section">
-        <h2>Session</h2>
-        <button type="button" className="btn btn-secondary" onClick={handleLogout}>Log out</button>
-      </section>
+      <div className="panel">
+        <section className="account-section" style={{ borderTop: 0, marginTop: 0, paddingTop: 0 }}>
+          <h2>Session</h2>
+          <button type="button" className="btn btn-secondary" onClick={handleLogout}>Log out</button>
+        </section>
 
-      <section className="account-section">
-        <h2>Account status</h2>
-        <p>Current status: {user.account_status}</p>
-        <button type="button" className="btn btn-secondary" onClick={deactivate}>Deactivate account</button>
-      </section>
+        <section className="account-section">
+          <h2>Account status</h2>
+          <p>Current status: {user.account_status}</p>
+          <button type="button" className="btn btn-secondary" onClick={deactivate}>Deactivate account</button>
+        </section>
 
-      <section className="account-section danger">
-        <h2>Delete account</h2>
-        <p>This permanently removes your profile and the lots you published.</p>
-        <button type="button" className="btn btn-danger" onClick={remove}>Delete account</button>
-      </section>
+        <section className="account-section danger">
+          <h2>Delete account</h2>
+          <p>This permanently removes your profile and the lots you published.</p>
+          <button type="button" className="btn btn-danger" onClick={remove}>Delete account</button>
+        </section>
 
-      {status && <p className="form-status">{status}</p>}
+        {status && <p className="form-status">{status}</p>}
+      </div>
 
-      <p><Link to="/profile">Back to profile</Link></p>
+      <p style={{ marginTop: 20 }}><Link to="/profile">← Back to profile</Link></p>
     </div>
   );
 }
