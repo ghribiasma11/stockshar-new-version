@@ -48,7 +48,7 @@ export default function AuthPage() {
         const data = await api.post('/auth/login', { email: form.email, password: form.password });
         login(data.token, data.user);
       }
-      navigate('/marketplace');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

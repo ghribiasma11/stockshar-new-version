@@ -58,18 +58,24 @@ export default function Profile() {
       <div className="page-head">
         <div>
           <h1>Your profile</h1>
-          <p>Update your details and profile photo.</p>
+          <p className="muted">Update your details and profile photo.</p>
         </div>
       </div>
 
-      <div className="panel">
+      <div className="panel profile-panel">
         <div className="avatar-block">
-          {user.avatar_url ? (
-            <img className="avatar" src={assetUrl(user.avatar_url)} alt="Profile" />
-          ) : (
-            <div className="avatar avatar-placeholder">{(user.full_name || 'U').charAt(0)}</div>
-          )}
-          <div>
+          <div className="avatar-meta">
+            {user.avatar_url ? (
+              <img className="avatar" src={assetUrl(user.avatar_url)} alt="Profile" />
+            ) : (
+              <div className="avatar avatar-placeholder">{(user.full_name || 'U').charAt(0)}</div>
+            )}
+            <div className="avatar-text">
+              <div className="user-main">{user.full_name || user.email}</div>
+              <div className="muted user-sub">{user.organization || user.city || ''}</div>
+            </div>
+          </div>
+          <div className="avatar-actions">
             <input ref={fileRef} type="file" accept="image/*" className="hidden-input" onChange={uploadPhoto} />
             <button type="button" className="btn btn-secondary" onClick={() => fileRef.current.click()}>
               Change profile photo

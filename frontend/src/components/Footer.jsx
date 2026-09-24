@@ -1,10 +1,29 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { api } from '../api.js';
 
 export default function Footer() {
-  const siteUrl = import.meta.env.VITE_PUBLIC_SITE_URL || 'https://stockshare.example';
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
+
+  async function subscribe(event) {
+    event.preventDefault();
+    setStatus('Subscribing...');
+    try {
+      await api.post('/newsletter', { email });
+      setStatus('You are subscribed. Thank you!');
+      setEmail('');
+    } catch (error) {
+      setStatus(error.message);
+    }
+  }
 
   return (
     <footer className="site-footer">
+      <section id="newsletter" className="footer-newsletter">
+        <div><p className="eyebrow">Newsletter</p><h2>Stay in the loop.</h2><p>Monthly stories about the lots that found a second life, plus product updates.</p></div>
+        <div><form onSubmit={subscribe} className="inline-form"><input type="email" required placeholder="you@company.com" value={email} onChange={(event) => setEmail(event.target.value)} /><button type="submit" className="btn btn-yellow">Subscribe</button></form>{status && <p className="footer-newsletter-status">{status}</p>}</div>
+      </section>
       <div className="footer-grid">
         <div>
           <h3>StockShare</h3>
@@ -29,7 +48,6 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <span>Copyright StockShare. All rights reserved.</span>
-        <span className="canonical">Canonical link: <a href={siteUrl}>{siteUrl}</a></span>
       </div>
     </footer>
   );

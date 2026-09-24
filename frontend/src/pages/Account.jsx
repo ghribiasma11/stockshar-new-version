@@ -51,26 +51,33 @@ export default function Account() {
       <div className="page-head">
         <div>
           <h1>Account settings</h1>
-          <p>Signed in as {user.email}.</p>
+          <p className="muted">Signed in as {user.email}.</p>
         </div>
       </div>
 
-      <div className="panel">
+      <div className="panel account-panel">
         <section className="account-section" style={{ borderTop: 0, marginTop: 0, paddingTop: 0 }}>
           <h2>Session</h2>
-          <button type="button" className="btn btn-secondary" onClick={handleLogout}>Log out</button>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <button type="button" className="btn btn-secondary" onClick={handleLogout}>Log out</button>
+            <button type="button" className="btn" onClick={() => navigate('/profile')}>View profile</button>
+          </div>
         </section>
 
         <section className="account-section">
           <h2>Account status</h2>
-          <p>Current status: {user.account_status}</p>
-          <button type="button" className="btn btn-secondary" onClick={deactivate}>Deactivate account</button>
+          <p>Current status: <strong>{user.account_status}</strong></p>
+          <div style={{ marginTop: 10 }}>
+            <button type="button" className="btn btn-secondary" onClick={deactivate}>Deactivate account</button>
+          </div>
         </section>
 
         <section className="account-section danger">
           <h2>Delete account</h2>
           <p>This permanently removes your profile and the lots you published.</p>
-          <button type="button" className="btn btn-danger" onClick={remove}>Delete account</button>
+          <div style={{ marginTop: 10 }}>
+            <button type="button" className="btn btn-danger" onClick={remove}>Delete account</button>
+          </div>
         </section>
 
         {status && <p className="form-status">{status}</p>}

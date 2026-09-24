@@ -10,12 +10,22 @@ import Profile from './pages/Profile.jsx';
 import Account from './pages/Account.jsx';
 import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import DeclareLot from './pages/DeclareLot.jsx';
+import MyLots from './pages/MyLots.jsx';
+import Transfers from './pages/Transfers.jsx';
+import Impact from './pages/Impact.jsx';
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/declare" element={<DeclareLot />} />
+      <Route path="/my-lots" element={<MyLots />} />
+      <Route path="/transfers" element={<Transfers />} />
+      <Route path="/impact" element={<Impact />} />
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="/lots/:id" element={<LotDetail />} />
       <Route path="/profile" element={<Profile />} />
@@ -34,7 +44,7 @@ export default function App() {
     return <AppRoutes />;
   }
 
-  const appPaths = ['/marketplace', '/profile', '/account'];
+  const appPaths = ['/dashboard', '/declare', '/my-lots', '/transfers', '/impact', '/marketplace', '/profile', '/account'];
   const isApp = appPaths.includes(path) || path.indexOf('/lots/') === 0;
 
   if (isApp) {

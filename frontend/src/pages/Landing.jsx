@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
 import LotCard from '../components/LotCard.jsx';
+import { useAuth } from '../auth/AuthContext.jsx';
 
 const PATHWAYS = [
   {
@@ -19,9 +20,8 @@ const PATHWAYS = [
 ];
 
 export default function Landing() {
+  const { user } = useAuth();
   const [lots, setLots] = useState([]);
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterStatus, setNewsletterStatus] = useState('');
   const [contact, setContact] = useState({ name: '', email: '', subject: '', message: '' });
   const [contactStatus, setContactStatus] = useState('');
 
@@ -37,23 +37,15 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
+    if (!user) {
+      setLots([]);
+      return;
+    }
     api
       .get('/lots')
       .then((data) => setLots(data.lots.slice(0, 3)))
       .catch(() => setLots([]));
-  }, []);
-
-  async function subscribe(event) {
-    event.preventDefault();
-    setNewsletterStatus('Subscribing...');
-    try {
-      await api.post('/newsletter', { email: newsletterEmail });
-      setNewsletterStatus('You are subscribed. Thank you!');
-      setNewsletterEmail('');
-    } catch (err) {
-      setNewsletterStatus(err.message);
-    }
-  }
+  }, [user]);
 
   async function sendContact(event) {
     event.preventDefault();
@@ -75,35 +67,43 @@ export default function Landing() {
         <span className="ring ring-a" />
         <span className="ring ring-b" />
         <div className="hero-inner">
-          <div>
+          <div className="hero-copy">
             <p className="eyebrow">Food should keep moving</p>
             <h1>Good food.<span>Next chapter.</span></h1>
             <p className="lede">
-              StockShare helps businesses pass surplus ingredients to people, animals, and industry before they become waste.
+              StockShare helps businesses pass surplus ingredients to people, animals, and industry — before they become waste.
             </p>
             <div className="hero-actions">
-              <Link to="/marketplace" className="btn btn-yellow">Explore available lots</Link>
-              <Link to="/auth" className="btn btn-secondary" style={{ color: '#f4f1d9', borderColor: 'rgba(244,241,217,0.4)' }}>
-                I have surplus
+              <Link to={user ? '/marketplace' : '/auth'} className="btn btn-yellow">Explore available lots <span aria-hidden="true">↗</span></Link>
+              <Link to={user ? '/declare' : '/auth?mode=signup'} className="btn btn-secondary">
+                I have surplus <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>
 
           <div className="hero-card">
             <div className="hero-card-inner">
-              <p className="eyebrow">Just added</p>
-              <h3>{featured ? featured.title : 'Golden orchard apples'}</h3>
-              <p className="lot-meta">
-                {featured ? featured.quantity_kg : 120} kg · Near expiry {featured ? featured.location_city : 'Tunis'}
-              </p>
-              <p className="lot-meta">{featured ? featured.quantity_kg : 120} kg saved · Human donation</p>
+              <div className="hero-card-top"><span>Live on StockShare</span><strong>Just added</strong></div>
+              <div className="hero-product-art" aria-label="Surplus ingredients finding a new destination">
+                <span className="produce-orbit produce-orbit-one" />
+                <span className="produce-orbit produce-orbit-two" />
+                <span className="produce-shape produce-apple" />
+                <span className="produce-shape produce-orange" />
+                <span className="produce-shape produce-leaf" />
+                
+              </div>
+              <div className="hero-card-details">
+                <h3>{user && featured ? featured.title : 'Golden orchard apples'}</h3>
+                <div className="hero-card-meta"><span>{user && featured ? `${featured.quantity_value ?? featured.quantity_kg} ${featured.quantity_unit || 'kg'}` : '120 kg'} · Near expiry</span><span>⌖ &nbsp;{user && featured ? featured.location_city : 'Tunis'}</span></div>
+                <div className="hero-card-foot"><span>♧ &nbsp;{user && featured ? `${featured.quantity_kg} kg saved` : '120 kg saved'}</span><strong>Human donation</strong></div>
+              </div>
             </div>
-            <span className="status-pill">Live on StockShare</span>
+            <span className="status-pill">✓ &nbsp;A real second life</span>
           </div>
         </div>
       </section>
 
-      <section className="section ivory">
+      <section className="section ivory" id="why-stockshare">
         <div className="section-inner section split">
           <div>
             <p className="eyebrow">A real second life</p>
@@ -124,7 +124,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" id="circular-path">
         <div className="section-inner">
           <p className="eyebrow">The circular path</p>
           <h2>A better hand-off.</h2>
@@ -141,7 +141,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section ivory">
+      {user && <section className="section ivory">
         <div className="section-inner">
           <div className="page-head">
             <div>
@@ -156,30 +156,7 @@ export default function Landing() {
             ))}
           </div>
         </div>
-      </section>
-
-      <section id="newsletter" className="section">
-        <div className="section-inner section split">
-          <div>
-            <p className="eyebrow">Newsletter</p>
-            <h2>Stay in the loop.</h2>
-          </div>
-          <div>
-            <p>Monthly stories about the lots that found a second life, plus product updates.</p>
-            <form onSubmit={subscribe} className="inline-form">
-              <input
-                type="email"
-                required
-                placeholder="you@company.com"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-              />
-              <button type="submit" className="btn btn-primary">Subscribe</button>
-            </form>
-            {newsletterStatus && <p className="form-status">{newsletterStatus}</p>}
-          </div>
-        </div>
-      </section>
+      </section>}
 
       <section id="contact" className="section ivory">
         <div className="section-inner section split">
